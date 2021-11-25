@@ -1,0 +1,64 @@
+loader.preload = "file:{{ gramine.libos }}"
+libos.entrypoint = "{{ self_exe }}"
+loader.argv0_override = "{{ self_exe }}"
+loader.log_level = "trace"
+
+# Currently required for Tokio (eventfd is done by the host not the enclave, so less secure)
+sys.insecure__allow_eventfd = true
+
+loader.env.LD_LIBRARY_PATH = "{{ libdir }}"
+loader.env.RUST_BACKTRACE = "1"
+loader.env.RUST_LIB_BACKTRACE = "1"
+
+fs.mount.lib.type = "chroot"
+fs.mount.lib.path = "/lib"
+fs.mount.lib.uri = "file:{{ gramine.runtimedir() }}"
+
+fs.mount.lib2.type = "chroot"
+fs.mount.lib2.path = "{{ libdir }}"
+fs.mount.lib2.uri = "file:{{ libdir }}"
+
+fs.mount.local_lib.type = "chroot"
+fs.mount.local_lib.path = "/usr/local/lib"
+fs.mount.local_lib.uri = "file:/usr/local/lib"
+
+fs.mount.tmp.type = "tmpfs"
+fs.mount.tmp.path = "/tmp"
+fs.mount.tmp.uri = "none"
+
+fs.mount.etc.type = "chroot"
+fs.mount.etc.path = "/etc"
+fs.mount.etc.uri = "file:/etc"
+
+sgx.enclave_size = "512M"
+sgx.thread_num = 16
+sgx.rpc_thread_num = 8
+
+sgx.trusted_files = [
+  "file:{{ self_exe }}",
+  "file:{{ gramine.runtimedir() }}/",
+  "file:/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+  "file:{{ libdir }}/libgcc_s.so.1",
+  "file:{{ libdir }}/libpthread.so.0",
+  "file:{{ libdir }}/libdl.so.2",
+  "file:{{ libdir }}/libc.so.6",
+  "file:{{ libdir }}/libm.so.6",
+  "file:{{ libdir }}/libstdc++.so.6",
+  "file:{{ libdir }}/libresolv.so.2",
+
+  "file:{{ libdir }}/libssl.so.1.1",
+  "file:{{ libdir }}/libcrypto.so.1.1",
+]
+
+sgx.allowed_files = [
+  "file:/etc/nsswitch.conf",
+  "file:/etc/host.conf",
+  "file:/etc/resolv.conf",
+  "file:/etc/ethers",
+  "file:/etc/hosts",
+  "file:/etc/group",
+  "file:/etc/passwd",
+  "file:/etc/localtime",
+  "file:/etc/ld.so.cache",
+  "file:/etc/ssl/certs/ca-certificates.crt",
+]
