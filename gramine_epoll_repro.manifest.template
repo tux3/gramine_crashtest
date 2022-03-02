@@ -1,5 +1,5 @@
 loader.preload = "file:{{ gramine.libos }}"
-libos.entrypoint = "{{ self_exe }}"
+loader.entrypoint = "file:{{ self_exe }}"
 loader.argv0_override = "{{ self_exe }}"
 loader.log_level = "trace"
 
